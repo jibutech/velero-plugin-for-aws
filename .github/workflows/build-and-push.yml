@@ -13,7 +13,7 @@ jobs:
       with:
         fetch-depth: 0
     - id: generate
-      run: echo "tag=$(./hack/image-tag)" >> $GITHUB_OUTPUT
+      run: echo "tag=$(./hack/image-tag.sh)" >> $GITHUB_OUTPUT
 
   build:
     runs-on: ubuntu-latest
