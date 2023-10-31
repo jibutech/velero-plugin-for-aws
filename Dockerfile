@@ -12,15 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:1.13-buster AS build
+FROM --platform=$BUILDPLATFORM golang:1.13-buster AS build
+
+ARG TARGETOS
+ARG TARGETARCH
+ARG TARGETVARIANT
+ARG GOPROXY
+
+ENV GOOS=${TARGETOS} \
+    GOARCH=${TARGETARCH} \
+    GOARM=${TARGETVARIANT} \
+    GOPROXY=${GOPROXY}
+
 COPY . /go/src/velero-plugin-for-aws
 WORKDIR /go/src/velero-plugin-for-aws
-RUN CGO_ENABLED=0 GOOS=linux go build -v -o /go/bin/velero-plugin-for-aws ./velero-plugin-for-aws
+RUN export GOARM=$( echo "${GOARM}" | cut -c2-) && \
+    CGO_ENABLED=0 go build -v -o /go/bin/velero-plugin-for-aws ./velero-plugin-for-aws
 
-FROM busybox:1.33.1 AS busybox
+FROM --platform=$BUILDPLATFORM velero/velero-plugin-for-aws:v1.8.1 AS cp-plugin
 
-FROM gcr.io/distroless/base-debian10:nonroot
+FROM scratch
 COPY --from=build /go/bin/velero-plugin-for-aws /plugins/
-COPY --from=busybox /bin/cp /bin/cp
-USER nonroot:nonroot
-ENTRYPOINT ["cp", "/plugins/velero-plugin-for-aws", "/target/."]
+COPY --from=cp-plugin /bin/cp-plugin /bin/cp-plugin
+USER 65532:65532
+ENTRYPOINT ["cp-plugin", "/plugins/velero-plugin-for-aws", "/target/velero-plugin-for-aws"]

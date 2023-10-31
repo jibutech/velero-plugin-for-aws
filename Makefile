@@ -20,6 +20,11 @@ VERSION 	?= main
 
 CONTAINER_PLATFORMS ?= amd64 arm arm64 # ppc64le
 
+# Jibu version and tag
+IMAGE_TAG:=$(shell ./hack/image-tag.sh)
+TAG ?= ${IMAGE_TAG}
+JIBU_IMG ?= registry.cn-shanghai.aliyuncs.com/jibutech/velero-plugin-for-aws:$(TAG)
+
 # Which architecture to build.
 # if the 'local' rule is being run, detect the GOOS/GOARCH from 'go env'
 # if it wasn't specified by the caller.
@@ -127,3 +132,9 @@ verify-modules: modules
 clean:
 	@echo "cleaning"
 	rm -rf _output
+
+build-image:
+	docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t $(JIBU_IMG) .
+
+push-image:
+	docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t $(JIBU_IMG) .
