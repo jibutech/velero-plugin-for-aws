@@ -137,4 +137,4 @@ build-image:
 	docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t $(JIBU_IMG) .
 
 push-image:
-	docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t $(JIBU_IMG) .
+	docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t $(JIBU_IMG) . --push
