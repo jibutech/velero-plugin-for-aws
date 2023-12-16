@@ -15,15 +15,15 @@
 PKG := github.com/vmware-tanzu/velero-plugin-for-aws
 BIN := velero-plugin-for-aws
 
-REGISTRY 	?= velero
+REGISTRY 	?= jibutech-registry.cn-hangzhou.cr.aliyuncs.com/ys1000
 VERSION 	?= main
 
-CONTAINER_PLATFORMS ?= amd64 arm arm64 # ppc64le
+CONTAINER_PLATFORMS ?= amd64 arm64 # ppc64le arm
 
 # Jibu version and tag
 IMAGE_TAG:=$(shell ./hack/image-tag.sh)
 TAG ?= ${IMAGE_TAG}
-JIBU_IMG ?= registry.cn-shanghai.aliyuncs.com/jibutech/velero-plugin-for-aws:$(TAG)
+JIBU_IMG ?= ${REGISTRY}/velero-plugin-for-aws:$(TAG)
 
 # Which architecture to build.
 # if the 'local' rule is being run, detect the GOOS/GOARCH from 'go env'
