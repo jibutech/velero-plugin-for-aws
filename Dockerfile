@@ -29,9 +29,9 @@ WORKDIR /go/src/velero-plugin-for-aws
 RUN export GOARM=$( echo "${GOARM}" | cut -c2-) && \
     CGO_ENABLED=0 go build -v -o /go/bin/velero-plugin-for-aws ./velero-plugin-for-aws
 
-FROM --platform=$BUILDPLATFORM velero/velero-plugin-for-aws:v1.8.1 AS cp-plugin
+FROM --platform=${TARGETPLATFORM} velero/velero-plugin-for-aws:v1.8.1 AS cp-plugin
 
-FROM scratch
+FROM --platform=${TARGETPLATFORM} scratch
 COPY --from=build /go/bin/velero-plugin-for-aws /plugins/
 COPY --from=cp-plugin /bin/cp-plugin /bin/cp-plugin
 USER 65532:65532
